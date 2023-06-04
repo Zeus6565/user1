@@ -1,0 +1,62 @@
+    // Function to set a cookie
+    function setCookie(cname, cvalue, exseconds) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exseconds * 1000));
+      var expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    // Function to get a cookie
+    function getCookie(cname) {
+      var name = cname + "=";
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    // Function to check if the user is logged in
+    function checkLogin() {
+      var passwordHash = getCookie("password");
+      var passwordInput = document.getElementById("password").value;
+      var hashedInput = sha256(passwordInput);
+
+      if (hashedInput === passwordHash) {
+        showContent();
+      }
+    }
+
+    // Function to show the content and hide the login form
+    function showContent() {
+      document.getElementById("content").style.display = "block";
+      document.getElementById("loginForm").style.display = "none";
+    }
+
+    // Function to handle form submission
+    function submitForm() {
+      var passwordInput = document.getElementById("password").value;
+      var hashedInput = sha256(passwordInput);
+      var passwordHash = "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4";
+
+      if (hashedInput === passwordHash) {
+        setCookie("password", hashedInput, 30); // Set the cookie for 30 seconds
+        showContent();
+      } else {
+        alert("Invalid password. Please try again.");
+      }
+      return false;
+    }
+
+    // Function to hash a string using SHA-256
+    function sha256(str) {
+      var hash = CryptoJS.SHA256(str);
+      return hash.toString(CryptoJS.enc.Hex);
+    }
